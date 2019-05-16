@@ -216,7 +216,6 @@ def showCategoryJSON(category_name):
 def showItemJSON(category_name, item_name):
     item_category = (session.query(Category)
                      .filter_by(name=category_name).one_or_none())
-        items = (session.query(Item)
     if request.args.get('key') == app.secret_key:
         output_item = (session.query(Item)
                        .filter_by

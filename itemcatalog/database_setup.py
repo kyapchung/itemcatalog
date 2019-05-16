@@ -63,7 +63,7 @@ class Item(Base):
             'name': self.name,
             'creator': self.creator,
             'description': self.description,
-            'category_name': self.category_id,
+            'category_name': self.category_name,
         }
 
 
