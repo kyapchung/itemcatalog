@@ -52,7 +52,7 @@ class Item(Base):
     name = Column(String(80), nullable=False)
     description = Column(String(250))
     creator = Column(Integer, nullable=False)
-    category_name = Column(String, ForeignKey('category.name'))
+    category_id = Column(String, ForeignKey('category.id'))
     category = relationship(Category, cascade="save-update, delete")
 
     @property
@@ -63,7 +63,7 @@ class Item(Base):
             'name': self.name,
             'creator': self.creator,
             'description': self.description,
-            'category_name': self.category_name,
+            'category_name': self.category_id,
         }
 
 

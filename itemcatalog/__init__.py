@@ -60,7 +60,9 @@ def showCatalog():
 @app.route('/catalog/<category_name>/items')
 def showCategoryItems(category_name):
     categories = session.query(Category).order_by(asc(Category.name))
-    items = session.query(Item).filter_by(category_name=category_name
+    items_category = (session.query(Category)
+                      .filter_by(name=category_name).one_or_none())
+    items = session.query(Item).filter_by(category_id=items_category.id
                                           ).order_by(desc(Item.id))
     item_count = items.count()
     itemTitle = str(category_name) + " Items (" + str(item_count) + " item(s))"
@@ -77,8 +79,10 @@ def showCategoryItems(category_name):
 # show options to edit or delete item
 @app.route('/catalog/<category_name>/<item_name>')
 def showItemInformation(category_name, item_name):
+    item_category = (session.query(Category)
+                     .filter_by(name=category_name).one_or_none())    
     item = (session.query(Item)
-            .filter_by(name=item_name, category_name=category_name)
+            .filter_by(name=item_name, category_id=item_category.id)
             .one_or_none())
     if 'username' not in login_session:
         return render_template('publicitemDesc.html', item=item)
@@ -95,14 +99,17 @@ def newItem():
     if 'username' not in login_session:
         return redirect('/login')
     if request.method == 'POST':
+        item_category = (session.query(Category)
+                         .filter_by(name=request.form['category'])
+                         .one_or_none())
         newItem = Item(name=request.form['name'],
                        description=request.form['description'],
-                       category_name=request.form['category'],
+                       category_id=item_category.id,
                        creator=login_session['email'])
         session.add(newItem)
         session.commit()
         flash('New %s Item: %s Successfully Created'
-              % (newItem.category_name, newItem.name))
+              % (item_category.name, newItem.name))
         return redirect(url_for('showCatalog'))
     else:
         return render_template('newItem.html', categories=categories)
@@ -114,11 +121,14 @@ def newItem():
 def editItem(item_name):
     categories = session.query(Category).order_by(asc(Category.name))
     editedItem = session.query(Item).filter_by(name=item_name).one_or_none()
+    item_category = (session.query(Category)
+                        .filter_by(id=editedItem.category_id)
+                        .one_or_none())
     if 'username' not in login_session:
         return redirect('/login')
     if login_session['user_id'] != editedItem.creator:
         return redirect(url_for('showItemInformation',
-                                category_name=editedItem.category_name,
+                                category_name=item_category.name,
                                 item_name=editedItem.name))
     if request.method == 'POST':
         if request.form['name']:
@@ -126,12 +136,15 @@ def editItem(item_name):
         if request.form['description']:
             editedItem.description = request.form['description']
         if request.form['category']:
-            editedItem.category_name = request.form['category']
+            new_item_category = (session.query(Category)
+                                    .filter_by(name=request.form['category'])
+                                    .one_or_none())
+            editedItem.category_id = new_item_category.id
         session.add(editedItem)
         session.commit()
         flash('Item Successfully Edited')
         return redirect(url_for('showItemInformation',
-                                category_name=editedItem.category_name,
+                                category_name=new_item_category.name,
                                 item_name=editedItem.name))
     else:
         return render_template('editItem.html', categories=categories,
@@ -142,6 +155,9 @@ def editItem(item_name):
 @app.route('/catalog/<item_name>/delete', methods=['GET', 'POST'])
 def deleteItem(item_name):
     itemToDelete = session.query(Item).filter_by(name=item_name).one_or_none()
+    item_category = (session.query(Category)
+                                    .filter_by(id=itemToDelete.category_id)
+                                    .one_or_none())
     if 'username' not in login_session:
         return redirect('/login')
     if login_session['user_id'] != itemToDelete.creator:
@@ -153,7 +169,7 @@ def deleteItem(item_name):
         session.commit()
         flash('Item Successfully Deleted')
         return redirect(url_for('showCategoryItems',
-                                category_name=itemToDelete.category_name))
+                                category_name=item_category.name))
     else:
         return render_template('deleteItem.html', item=itemToDelete)
 
@@ -166,7 +182,7 @@ def showCatalogJSON():
         categories = session.query(Category).all()
         for i, category in enumerate(categories):
             items = (session.query(Item)
-                     .filter_by(category_name=category.name).all())
+                     .filter_by(category_id=category.id).all())
             catalog_dict["Category"].append(category.serialize)
             catalog_dict["Category"][i]["Item"] = []
 
@@ -184,7 +200,7 @@ def showCategoryJSON(category_name):
         output_category = (session.query(Category)
                            .filter_by(name=category_name).one_or_none())
         items = (session.query(Item)
-                 .filter_by(category_name=output_category.name).all())
+                 .filter_by(category_id=output_category.id).all())
         category_dict = {output_category.name: []}
         category_dict[output_category.name] = [{"Item": []}]
         for j, item in enumerate(items):
@@ -198,9 +214,13 @@ def showCategoryJSON(category_name):
 # JSON API endpoint - view a specific item
 @app.route('/api/v1/catalog/<category_name>/<item_name>')
 def showItemJSON(category_name, item_name):
+    item_category = (session.query(Category)
+                     .filter_by(name=category_name).one_or_none())
+        items = (session.query(Item)
     if request.args.get('key') == app.secret_key:
         output_item = (session.query(Item)
-                       .filter_by(category_name=category_name, name=item_name)
+                       .filter_by
+                       (category_id=item_category.id, name=item_name)
                        .one_or_none())
         item_dict = output_item.serialize
         return json.dumps(item_dict)
