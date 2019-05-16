@@ -25,12 +25,12 @@ app = Flask(__name__)
 
 
 CLIENT_ID = json.loads(
-    open('client_secrets.json', 'r').read())['web']['client_id']
+    open('/var/www/itemcatalog/itemcatalog/client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Catalog Application"
 
 
 # Connect to Database and create database session
-engine = create_engine('sqlite:///itemcatalog.db',
+engine = create_engine('postgresql://itemcatalog:udacity@localhost/itemcatalog',
                        connect_args={'check_same_thread': False})
 Base.metadata.bind = engine
 
@@ -230,7 +230,7 @@ def gconnect():
 
     try:
         # Upgrade the authorization code into a credentials object
-        oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
+        oauth_flow = flow_from_clientsecrets('/var/www/itemcatalog/itemcatalog/client_secrets.json', scope='')
         oauth_flow.redirect_uri = 'postmessage'
         credentials = oauth_flow.step2_exchange(code)
     except FlowExchangeError:

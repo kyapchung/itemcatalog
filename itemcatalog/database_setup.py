@@ -67,6 +67,6 @@ class Item(Base):
         }
 
 
-engine = create_engine('sqlite:///itemcatalog.db')
+engine = create_engine('postgresql://itemcatalog:udacity@localhost/itemcatalog')
 
 Base.metadata.create_all(engine)
