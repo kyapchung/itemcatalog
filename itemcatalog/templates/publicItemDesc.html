@@ -1,0 +1,21 @@
+{% extends "main.html" %}
+{% block content %}
+{% include "publicHeader.html" %}
+
+	<div class="row">
+		<div class="col-md-1"></div>
+			<div class="col-md-10">
+				<h2>{{item.name}}</h2>
+			</div>
+		<div class="col-md-1"></div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-10">
+				<p>Description: {{item.description}}</p>
+		</div>
+		<div class="col-md-1"></div>
+	</div>
+
+{% endblock %}

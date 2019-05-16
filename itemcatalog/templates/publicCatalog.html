@@ -1,0 +1,43 @@
+{% extends "main.html" %}
+{% block content %}
+{% include "publicHeader.html" %}
+
+	<div class="row padding-top padding-bottom">
+		<div class="col-md-1"></div>
+		<div class="col-md-10 padding-none">
+			
+		</div>
+		<div class="col-md-1"></div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-1"></div>
+			<div class="col-md-5">
+				<h2>Categories</h2>
+			</div>
+			<div class="col-md-5">
+				<h2>{{title}}</h2>			
+			</div>
+		<div class="col-md-1"></div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-1"></div>
+		<div class="col-md-5">
+			<div class="row">
+				{% for category in categories %}
+					<a href = "{{url_for('showCategoryItems', category_name = category.name)}}">
+						<div class="col-md-12 category-list">
+							<h3>{{category.name}}</h3>
+						</div>
+					</a>
+				{% endfor %}	
+			</div>
+		</div>
+		<div class="col-md-5">
+			{% include "itemList.html" %}
+		</div>
+		<div class="col-md-1"></div>
+	</div>
+
+{% endblock %}
