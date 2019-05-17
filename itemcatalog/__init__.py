@@ -47,7 +47,7 @@ def showCatalog():
     latest_items = session.query(Item).order_by(desc(Item.id)).limit(9)
     itemTitle = "Latest Items"
     if 'username' not in login_session:
-        return render_template('publiccatalog.html', categories=categories,
+        return render_template('publicCatalog.html', categories=categories,
                                items=latest_items, title=itemTitle)
     else:
         #print login_session
@@ -85,9 +85,9 @@ def showItemInformation(category_name, item_name):
             .filter_by(name=item_name, category_id=item_category.id)
             .one_or_none())
     if 'username' not in login_session:
-        return render_template('publicitemDesc.html', item=item)
+        return render_template('publicItemDesc.html', item=item)
     if login_session['user_id'] != item.creator:
-        return render_template('publicitemDesc.html', item=item)
+        return render_template('publicItemDesc.html', item=item)
     else:
         return render_template('itemDesc.html', item=item)
 
