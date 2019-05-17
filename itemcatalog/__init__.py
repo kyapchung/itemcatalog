@@ -104,7 +104,7 @@ def newItem():
         newItem = Item(name=request.form['name'],
                        description=request.form['description'],
                        category_id=item_category.id,
-                       creator=login_session['email'])
+                       creator=login_session['user_id'])
         session.add(newItem)
         session.commit()
         flash('New %s Item: %s Successfully Created'
