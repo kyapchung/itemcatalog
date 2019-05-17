@@ -24,7 +24,7 @@
 				<div class="select">
 					<select name="category">
 						{% for category in categories %}
-						<option value="{{category.name}}"{% if item.category_name in category.name %}selected="selected"{% endif %}>{{category.name}}</option>
+						<option value="{{category.name}}"{% if categories.filter_by(id=item.category_id).one_or_none().name in category.name %}selected="selected"{% endif %}>{{category.name}}</option>
 						{% endfor %}
 					</select>
 				</div>
