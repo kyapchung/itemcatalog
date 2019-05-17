@@ -30,8 +30,7 @@ APPLICATION_NAME = "Catalog Application"
 
 
 # Connect to Database and create database session
-engine = create_engine('postgresql://itemcatalog:udacity@localhost/itemcatalog',
-                       connect_args={'check_same_thread': False})
+engine = create_engine('postgresql://itemcatalog:udacity@localhost/itemcatalog')
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
