@@ -2,7 +2,7 @@
 <div class="row">
     <a href = "{{url_for('showItemInformation', category_name = item.category_name, item_name = item.name)}}">
         <div class="col-md-12 item-list">
-            <h3>{{" " + item.name + " (" + item.category.name + ")"}}</h3>
+            <h3>{{" " + item.name + " (" + categories.filter_by(id=item.category_id).one_or_none().name + ")"}}</h3>
         </div>
     </a>	
 </div>
