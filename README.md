@@ -8,6 +8,9 @@ The final application is hosted at:
 URL: [http://ec2-52-37-173-65.us-west-2.compute.amazonaws.com](http://ec2-52-37-173-65.us-west-2.compute.amazonaws.com/catalog)
 Server IP: [http://52.37.173.65](http://52.37.173.65)
 
+To SSH into the server, save the private key to the .ssh/ directory on the private terminal and run:
+`ssh grader@52.37.173.65 -p 2200 -i ./.ssh/id_rsa.pem`
+
 ## Summary of Software installed:
 
 - Server: Ubuntu 16.04.4 instance running via Amazon Lightsail [https://aws.amazon.com/lightsail/](https://aws.amazon.com/lightsail/)
