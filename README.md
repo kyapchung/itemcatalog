@@ -1,129 +1,192 @@
-# Item Catalog Project #
+# Linux Server Configuration Project
 
-## 1. Program Description ##
+## Project Description
 
-This program is python based web application for an **Item Catalog**.
+This project is simple "Item Catalog" web application running via the Web Server Gateway Interface (WSGI) scheme on an Ubuntu Linux server image. The Linux server has been configured according to the following documentation, as per the requirements of the Udacity Linux Server Configuration Project Specification.
 
-The web application allows users to view items in a variety of pre-defined categories. Authenticated users are also able to create, edit and delete items.
+The final application is hosted at: 
+URL: [http://ec2-52-37-173-65.us-west-2.compute.amazonaws.com](http://ec2-52-37-173-65.us-west-2.compute.amazonaws.com/catalog)
+Server IP: [http://52.37.173.65](http://52.37.173.65)
 
-## 2. Installation Requirements ##
+## Summary of Software installed:
 
-### 2.1 Program Environment ###
+- Server: Ubuntu 16.04.4 instance running via Amazon Lightsail [https://aws.amazon.com/lightsail/](https://aws.amazon.com/lightsail/)
 
-This program was created and tested using the following environment:  
-  
-- [VirtualBox](https://www.virtualbox.org/wiki/Downloads "Virtualbox Download") (Virtualization Software)  
-- [Vagrant](https://www.vagrantup.com/ "Vagrant Download") (VM Provisioning and configuration)  
-- Udacity Project VM Configuration Files (Available via [Direct Download](https://s3.amazonaws.com/video.udacity-data.com/topher/2018/April/5acfbfa3_fsnd-virtual-machine/fsnd-virtual-machine.zip) or [Github Repo](https://github.com/udacity/fullstack-nanodegree-vm))  
-  - VM configuration includes the following used in this project:  
-  - Ubuntu 16.04.5 LTS  
-  - python 2.7.12  
-  - psql 9.5.14
+- All system packages updated to the latest versions by running:
 
-- Unix style terminal program (Default OS terminal on Mac/Linux, Recommend [Git Bash](https://git-scm.com/downloads) on Windows)
+`sudo apt-get update`
+`sudo apt-get upgrade`
+`sudo apt-get dist-upgrade`
 
-- Web Browser
+- Installed packages via apt-get:
+    - apache2
+    - libapache2-mod-wsgi 
+    - python-dev
+    - git
+    - python-pip
+    - postgresql
 
-### 2.2 Program Files ###
+- Installed packages in venv/ via pip:
+    - Flask
+    - httplib2 
+    - oauth2client
+    - sqlalchemy
+    - psycopg2
+    - sqlalchemy_utils
+    - requests
 
-In order to run this program these files and folders should be in the working directory:  
-  
-- application.py
-- category_setup.py
-- client_secrets.json
-- database_setup.py
-- itemcatalog.db
-- README.md
-- static/
-    - styles.css
-- templates/
-    - catalog.html
-    - deleteItem.html
-    - editItem.html
-    - header.html
-    - itemDesc.html
-    - itemList.html
-    - login.html
-    - main.html
-    - newItem.html
-    - publicCatalog.html
-    - publicHeader.html
-    - publicItemDesc.html
+## Summary of Configurations
 
-### 2.3 Setup ###
+### Amazon Lightsail
 
-In order to setup and prepare the environment to run this program - follow these basic steps:
+- Connections allowed on:
+    - HTTP TCP 80
+    - NTP TCP 123
+    - SSH TCP 2200
 
-1. Download and install VirtualBox *(Consult VirtualBox documentation for more detailed instructions)*
-2. Download and install Vagrant *(Consult Vagrant documentation for more detailed instructions)*
-3. Download the VM Configuration files, extract if needed, and save to your desired directory
-4. Place the Program Files (outlined in section 2.2 above) in the /vagrant directory of the VM configuration folder
-5. Navigate to the /vagrant directory using your terminal program and provision the VM using the command int the terminal: `vagrant up`  
-6. **Note:** The initial setup may take a while as the appropriate files are downloaded and installed.  Subsequent startups will be much faster after this inital configuration.
-7. Log into the VM using the command in the terminal: `vagrant ssh`
-8. You have now setup your environment and are ready to use the program!
+- Assigned a static IP address
+- Using default account private key for remote SSH access
 
-## 3. Using the Program ##
+### Server Updates
+- All packages updates to most recent versions via:
+`sudo apt-get update`
+`sudo apt-get upgrade`
+`sudo apt-get dist-upgrade`
 
-### 3.1 Database & Server Setup
+### SSH Configuration
 
-While logged into the VM, in the terminal, navigate to the directory with the program files and create the database for the program using the following command:  
+Edit /etc/ssh/sshd_config to change SSH sonfiguration.
 
-`python database_setup.py`
+- Port changed from 22 to 2200:
+    - Port 2200
+- Disable root login
+    - PermitRootLogin no
+- Enforce key based authorization
+    - PasswordAuthentication no
 
-Populate the database with the base categories and items by using the command:
+### UFW Firewall
 
-`python category_setup.py`
+- Allow all outgoing connections
+- Incoming connections only allowed on:
+    - SSH TCP 2200
+    - HTTP TCP 80
+    - NTP 123
 
-Start the web server by running the command:  
+### Users & Permissions
+- Added users:
+    - grader
+    - itemcatalog
+- Added sudo permissions for both users by modifying /etc/sudoers.d and adding files with lines:
+    - grader ALL=(ALL:ALL) ALL
+    - itemcatalog ALL=(ALL:ALL) ALL
 
-`python application.py`  
+### RSA Key Authentication
 
-### 3.2 Web Application
+Created an RSA key pair for the grader account remote ssh login using:
 
-To use the web application, open your Web Browser and navigate to the address:
+`sudo ssh-keygen`
 
-[http://localhost:8000](http://localhost:8000)
+Save public key to grader home directory in:
 
-#### 3.2.1 Top Menu 
-- Home: Return to the Catalog Home Page
-- Login/Logout: Login or Logout using your Google Account (if you do not have an account you will need to create one to authenticate with this application)
+./.ssh/authorized_keys
 
-#### 3.2.2 Main Page (`http://localhost:8000/catalog or http://localhost:8000`)
-- Categories: Shows all the available pre defined categories. Selecting a category will bring up all of the available items in that category (See 3.2.3 Category Items).
-- Latest Items: Shows the 9 most recently created items and their categories. Selecting an item will bring up the detail page for that item.
-- Add Item (Authenticated Users Only): Brings up the page to create a new item.
+### Set local time to UTC
 
-#### 3.2.3 Category Items (`http://localhost:8000/catalog/<category_name>/items`)
-- Categories: Shows all the available pre defined categories. Selecting a category will bring up all of the available items in that category (See 3.2.3 Category Items).
-- (Category) Items: Shows all of the available items in the selected category. Selecting an item will bring up the detail page for that item.
-- Add Item (Authenticated Users Only): Brings up the page to create a new item.
+While logged in as grader run:
 
-#### 3.2.4 Item Description (`http://localhost:8000/catalog/<category_name>/<item_name>`)
-- This page shows the selected item name and description
-- (Authenticated Users Only): Links to Edit or Delete allow authenticated users to edit or delete the described item.
+`sudo dpkg-reconfigure tzdata`
 
-#### 3.2.5 Add Item (`http://localhost:8000/catalog/items/new`)
-- This page allows an authenticated user to create a new items by providing a name, description and category. Clicking Create creates the new item in the database.
+Set geographic area to "None" and timezone to UTC.
 
-#### 3.2.6 Edit Item (`http://localhost:8000/catalog/<item_name>/edit`)
-- This page allows an authenticated user to edit the described item. Clicking Edit updates the item in the database.
+### Set up App Directory
 
-#### 3.2.7 Delete Item (`http://localhost:8000/catalog/<category_name>/items`)
-- This page allows an authenticated user to delete the described item. Clicking Delete deletes the item from the database. Clicking cancel will return the user to the home page without deleting the item. 
+Set up the app directory in /var/www/
 
-#### 3.2.8 JSON API
-- This API allows a user with the API key to read details of the catalog in a JSON format. The user must append the Query Parameter: `?key=super_secret_key` to the desired API URI in order to view the JSON output. 
+`cd /var/www`
+`sudo mkdir itemcatalog`
 
-##### 3.2.8.1 JSON API - (`http://localhost:8000/api/v1/catalog)
-- This endpoint outputs the content of the entire catalog in JSON.
+Import the WSGI project files from the git repository
 
-##### 3.2.8.2 JSON API - (`http://localhost:8000/api/v1/catalog/<category_name>)
-- This endpoint outputs the category and all of its items in a JSON format. If the category name contains spaces, they must be replaced in the URI as `%20`. 
+`git clone https://github.com/kyapchung/itemcatalog.git itemcatalog` 
 
-##### 3.2.8.3 JSON API - (`http://localhost:8000/api/v1/catalog/<category_name>/<item_name>)
-- This endpoint outputs the specified item in a JSON format. If the category or item names contains spaces, they must be replaced in the URI as `%20`. 
+### Configure Apache for WSGI app
 
-## 4. References
-- Code snippets taken in part from Udacity Full Stack Web development nanodegree lessons
-- Web application interface inspired by Udacity "Restaurant Menu" application
+`sudo nano /etc/apache2/sites-available/itemcatalog.conf`
+
+    <VirtualHost *:80>
+        ServerName 52.37.173.65
+        ServerAlias ec2-52-37-173-65.us-west-2.compute.amazonaws.com
+        ServerAdmin admin@52.37.173.65
+        WSGIDaemonProcess itemcatalog python-path=/var/www/itemcatalog:/var/www/itemcatalog/venv/lib/python2.7/site-packages
+        WSGIProcessGroup itemcatalog
+        WSGIScriptAlias / /var/www/itemcatalog/itemcatalog.wsgi
+        <Directory /var/www/itemcatalog/itemcatalog/>
+            Order allow,deny
+            Allow from all
+        </Directory>
+        Alias /static /var/www/itemcatalog/itemcatalog/static
+        <Directory /var/www/itemcatalog/itemcatalog/static/>
+            Order allow,deny
+            Allow from all
+        </Directory>
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        LogLevel warn
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+    </VirtualHost>`
+
+### Configure Postgresql
+
+Switch to the postgres user using:
+
+`sudo su postgres`
+
+Open PostgreSQL interactive terminal with:
+
+`psql`
+
+Create a `itemcatalog` user with a password and give them the ability to create databases:
+
+`CREATE USER itemcatalog WITH PASSWORD 'udacity';`
+`ALTER USER itemcatalog CREATEDB;`
+`CREATE DATABASE itemcatalog WITH OWNER itemcatalog;`
+
+Connect to database:
+
+ `\c itemcatalog`
+
+`REVOKE ALL ON SCHEMA public FROM public;`
+`GRANT ALL ON SCHEMA public TO itemcatalog;`
+`CREATE DATABASE catalog WITH OWNER itemcatalog;`
+
+to list existing roles run:
+
+`\du.`
+
+Exit psql using:
+
+`\q`
+
+Switch back to the grader user: 
+
+`exit`
+
+Reset the apache server
+
+`sudo service apache2 restart`
+
+Enable the application
+
+`sudo a2ensite itemcatalog`
+
+## Appendix:
+
+Useful command for troubleshooting Apache server errors:
+
+`sudo tail /var/log/apache2/error.log`
+
+## References:
+
+- [Udacity Project Specification](https://review.udacity.com/#!/rubrics/2007/view)
+- [How To Deploy a Flask Application on an Ubuntu VPS](https://www.digitalocean.com/community/tutorials/how-to-deploy-a-flask-application-on-an-ubuntu-vps)
+- [https://github.com/juvers/Linux-Configuration](https://github.com/juvers/Linux-Configuration)
+- [https://github.com/boisalai/udacity-linux-server-configuration](https://github.com/boisalai/udacity-linux-server-configuration)
