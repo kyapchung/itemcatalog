@@ -120,7 +120,7 @@ Import the WSGI project files from the git repository
         ServerName 52.37.173.65
         ServerAlias ec2-52-37-173-65.us-west-2.compute.amazonaws.com
         ServerAdmin admin@52.37.173.65
-        WSGIDaemonProcess itemcatalog python-path=/var/www/itemcatalog:/var/www/itemcatalog/venv/lib/python2.7/site-packages
+        WSGIDaemonProcess itemcatalog python-path=/var/www/itemcatalog:/var/www/itemcatalog/itemcatalog/venv/lib/python2.7/site-packages
         WSGIProcessGroup itemcatalog
         WSGIScriptAlias / /var/www/itemcatalog/itemcatalog.wsgi
         <Directory /var/www/itemcatalog/itemcatalog/>
