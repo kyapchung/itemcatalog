@@ -1,8 +1,8 @@
-# Linux Server Configuration Project
+# Linux Server Configuration/Web Application Project
 
 ## Project Description
 
-This project is simple "Item Catalog" web application running via the Web Server Gateway Interface (WSGI) scheme on an Ubuntu Linux server image. The Linux server has been configured according to the following documentation, as per the requirements of the Udacity Linux Server Configuration Project Specification.
+This project is simple custom "Item Catalog" web application running via the Web Server Gateway Interface (WSGI) scheme on an Ubuntu Linux server image. The Linux server has been configured according to the following documentation, as per the requirements of the Udacity Linux Server Configuration Project Specification.
 
 The final application was* (*I no longer have this project actively hosted) hosted at: 
 URL: [http://ec2-52-37-173-65.us-west-2.compute.amazonaws.com](http://ec2-52-37-173-65.us-west-2.compute.amazonaws.com/catalog)
